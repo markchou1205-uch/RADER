@@ -99,3 +99,8 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#fff0
 /* Backdrop for sheets */
 .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.12);display:none}
 .backdrop.show{display:block}
+/* 確保層級正確：menu > sheet > backdrop */
+.menu{ z-index: 30; }
+.sheet{ z-index: 20; }
+.overlay{ z-index: 20; }
+.backdrop{ z-index: 10; } /* 點這裡可關抽屜 */
