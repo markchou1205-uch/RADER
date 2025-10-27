@@ -30,10 +30,10 @@ function vibrate(ms){ if(navigator.vibrate) navigator.vibrate(ms); }
 
 /* ====== Backdrop & Close Helpers ====== */
 const sheetBackdrop = document.getElementById('sheetBackdrop');
+function showBackdrop(){ sheetBackdrop?.classList.add('show'); }
+function hideBackdrop(){ sheetBackdrop?.classList.remove('show'); }
 function closeAllMenus(){ const m = document.getElementById('menu'); if(m) m.classList.remove('open'); }
 function anySheetOpen(){ return Array.from(document.querySelectorAll('.sheet')).some(s=>s.classList.contains('open')); }
-function showBackdrop(){ if(sheetBackdrop) sheetBackdrop.classList.add('show'); }
-function hideBackdrop(){ if(sheetBackdrop) sheetBackdrop.classList.remove('show'); }
 
 // Override openSheet/closeSheet to manage backdrop
 const _openSheet = openSheet; const _closeSheet = closeSheet;
