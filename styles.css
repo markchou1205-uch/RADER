@@ -127,3 +127,13 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#fff0
 /* 下拉外觀（可放在檔案最後） */
 .select{height:36px;border:1px solid var(--ring);border-radius:10px;padding:0 10px;background:var(--card);font-weight:700}
 .select:focus{outline:2px solid var(--primary);border-color:transparent}
+/* 拉桿一行＋右側預覽文字 */
+.rangeRow{display:flex;align-items:center;gap:10px}
+.rangeRow input[type="range"]{flex:1}
+.preview{
+  min-width:56px;           /* 右側固定寬度，數字不跳動 */
+  text-align:right;
+  font-weight:800;
+  color:var(--text);
+  opacity:.9;
+}
