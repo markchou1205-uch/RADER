@@ -94,3 +94,8 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#fff0
 .sep{height:1px;background:var(--ring);margin:10px 0}
 .badge2{font-size:12px;color:#374151;background:#eef2ff;border:1px solid #c7d2fe;padding:2px 8px;border-radius:999px}
 @media (max-width:420px){.stage{padding:8px}.phone{width:100%;height:calc(100vh - 16px);border-radius:24px}}
+
+
+/* Backdrop for sheets */
+.backdrop{position:absolute;inset:0;background:rgba(0,0,0,.12);display:none}
+.backdrop.show{display:block}

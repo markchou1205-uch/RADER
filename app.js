@@ -28,6 +28,41 @@ function openOverlay(id){ document.getElementById(id).classList.add('show'); }
 function closeOverlay(id){ document.getElementById(id).classList.remove('show'); }
 function vibrate(ms){ if(navigator.vibrate) navigator.vibrate(ms); }
 
+/* ====== Backdrop & Close Helpers ====== */
+const sheetBackdrop = document.getElementById('sheetBackdrop');
+function closeAllMenus(){ const m = document.getElementById('menu'); if(m) m.classList.remove('open'); }
+function anySheetOpen(){ return Array.from(document.querySelectorAll('.sheet')).some(s=>s.classList.contains('open')); }
+function showBackdrop(){ if(sheetBackdrop) sheetBackdrop.classList.add('show'); }
+function hideBackdrop(){ if(sheetBackdrop) sheetBackdrop.classList.remove('show'); }
+
+// Override openSheet/closeSheet to manage backdrop
+const _openSheet = openSheet; const _closeSheet = closeSheet;
+openSheet = function(id){ closeAllMenus(); _openSheet(id); showBackdrop(); };
+closeSheet = function(id){ _closeSheet(id); if(!anySheetOpen()) hideBackdrop(); };
+
+// Clicking on backdrop closes the topmost open sheet
+sheetBackdrop && sheetBackdrop.addEventListener('click', ()=>{
+  const opens = Array.from(document.querySelectorAll('.sheet.open'));
+  if(opens.length){ opens[opens.length-1].classList.remove('open'); }
+  if(!anySheetOpen()) hideBackdrop();
+});
+
+// ESC to close sheets or overlays or avatar menu
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    // Close sheets
+    const opens = Array.from(document.querySelectorAll('.sheet.open'));
+    if(opens.length){ opens[opens.length-1].classList.remove('open'); hideBackdrop(); return; }
+    // Close overlays
+    const ovs = Array.from(document.querySelectorAll('.overlay.show'));
+    if(ovs.length){ ovs[ovs.length-1].classList.remove('show'); return; }
+    // Close avatar menu
+    closeAllMenus();
+  }
+});
+
+
+
 /* ====== Topbar ====== */
 $('#brandHome').addEventListener('click', resetUI);
 const avatar = $('#avatar');
@@ -38,7 +73,7 @@ menu.querySelectorAll('.item').forEach(it=>{
   it.addEventListener('click', (e)=>{
     e.stopPropagation(); menu.classList.remove('open');
     const type = it.dataset.panel;
-    if(type==='plan') openOverlay('overlayPlan');
+    if(type==='plan') closeAllMenus(); openOverlay('overlayPlan');
     if(type==='search') openSheet('sheetSearch');
     if(type==='basic') openSheet('sheetBasic');
   });
@@ -63,9 +98,9 @@ $('#radarBtn').addEventListener('click', ()=>{
 });
 
 /* ====== Dock ====== */
-$('#historyBtn').addEventListener('click', ()=>openOverlay('overlayHistory'));
-$('#favBtn').addEventListener('click', ()=>openOverlay('overlayFav'));
-$('#planBtnDock').addEventListener('click', ()=>openOverlay('overlayPlan'));
+$('#historyBtn').addEventListener('click', ()=>closeAllMenus(); openOverlay('overlayHistory'));
+$('#favBtn').addEventListener('click', ()=>closeAllMenus(); openOverlay('overlayFav'));
+$('#planBtnDock').addEventListener('click', ()=>closeAllMenus(); openOverlay('overlayPlan'));
 $('#settingsBtn').addEventListener('click', ()=>openSheet('sheetSearch'));
 
 /* ====== Quick Lock ====== */
@@ -96,7 +131,7 @@ const scanBox = $('#scanBox');
 const resultBox = $('#resultBox');
 $('#startScan').addEventListener('click', ()=>{
   closeSheet('sheetMode');
-  openOverlay('overlay');
+  closeAllMenus(); openOverlay('overlay');
   scanBox.style.display='grid'; resultBox.style.display='none';
   setTimeout(()=>{
     scanBox.style.display='none';
