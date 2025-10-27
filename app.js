@@ -1,5 +1,10 @@
 
 /* ====== State ====== */
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.sheet').forEach(s => s.classList.remove('open'));
+  document.getElementById('sheetBackdrop')?.classList.remove('show');
+});
+
 const modeMeta = {
   casual:{label:'一般用餐',desc:'近距離、價位優先、評價門檻 3.5★'},
   treat:{label:'小確幸',desc:'中距離、評價 4.0★ 以上、評論數適中'},
