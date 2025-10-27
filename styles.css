@@ -137,3 +137,18 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#fff0
   color:var(--text);
   opacity:.9;
 }
+/* 今天想吃：快速條 + 小面板 */
+.qbar{ display:flex; gap:8px; justify-content:space-between; }
+.qbtn{ flex:1; padding:10px 12px; border-radius:12px; border:1px solid var(--ring); background:var(--card); cursor:pointer; text-align:center; font-weight:700; }
+.qbtn.active{ outline:2px solid var(--primary); background:#fff3ec; }
+
+.qpanel{ margin-top:8px; border:1px dashed var(--ring); border-radius:12px; padding:10px; display:none; background:var(--card); }
+.qpanel.show{ display:block; }
+.qpanel .row{ margin-top:6px; }
+.qpanel .actions{ display:flex; gap:8px; margin-top:8px; }
+.qpanel .actions .btn{ flex:1; }
+
+.badge-k{ font-size:12px; padding:0 6px; opacity:.8 }
+
+/* 讓抽屜/小面板內的拉桿右側有固定寬度預覽（你之前已加 .rangeRow，可共用） */
+.preview{ min-width:56px; text-align:right; font-weight:800; opacity:.9; }
