@@ -62,6 +62,72 @@
       <div class="card" style="gap:10px">
         <div class="status">快速提示：點擊下方中央的<strong>快速鎖定</strong>選單開始</div>
       </div>
+<!-- Quick one-time filters: 今天想吃（定點模式顯示） -->
+<div class="card" id="qbarBox" style="display:none; flex-direction:column; align-items:stretch;">
+  <div class="status" style="font-weight:700;margin-bottom:6px">今天想吃</div>
+
+  <div class="qbar">
+    <div class="qbtn" data-q="price">價格<span class="badge-k" id="qb-price"></span></div>
+    <div class="qbtn" data-q="dist">距離<span class="badge-k" id="qb-dist"></span></div>
+    <div class="qbtn" data-q="cats">種類<span class="badge-k" id="qb-cats"></span></div>
+    <div class="qbtn" data-q="rating">評價<span class="badge-k" id="qb-rating"></span></div>
+  </div>
+
+  <!-- 價格 -->
+  <div class="qpanel" id="qp-price">
+    <div class="ctrl" style="margin:0">
+      <label>價位上限（每人，元）</label>
+      <select id="qPriceCap" class="select">
+        <option value="100">100</option>
+        <option value="300">300</option>
+        <option value="500">500</option>
+        <option value="1000">1000</option>
+        <option value="3000">3000</option>
+      </select>
+    </div>
+    <div class="row rangeRow">
+      <input type="range" id="qPriceRange" class="range" min="0" max="500" step="10" value="200"/>
+      <span class="preview" id="qPricePreview">200</span>
+    </div>
+    <div class="actions">
+      <div class="btn" id="qPriceClear">清除</div>
+      <div class="btn primary" id="qPriceApply">套用（只這次）</div>
+    </div>
+  </div>
+
+  <!-- 距離 -->
+  <div class="qpanel" id="qp-dist">
+    <div class="row rangeRow">
+      <input type="range" id="qDistRange" class="range" min="1" max="20" step="1" value="10"/>
+      <span class="preview" id="qDistPreview">10</span>
+    </div>
+    <div class="actions">
+      <div class="btn" id="qDistClear">清除</div>
+      <div class="btn primary" id="qDistApply">套用（只這次）</div>
+    </div>
+  </div>
+
+  <!-- 種類 -->
+  <div class="qpanel" id="qp-cats">
+    <div class="row" id="qCatRow"></div>
+    <div class="actions">
+      <div class="btn" id="qCatsClear">清除</div>
+      <div class="btn primary" id="qCatsApply">套用（只這次）</div>
+    </div>
+  </div>
+
+  <!-- 評價 -->
+  <div class="qpanel" id="qp-rating">
+    <div class="row rangeRow">
+      <input type="range" id="qRatingRange" class="range" min="3.0" max="5.0" step="0.5" value="4.0"/>
+      <span class="preview" id="qRatingPreview">4.0★</span>
+    </div>
+    <div class="actions">
+      <div class="btn" id="qRatingClear">清除</div>
+      <div class="btn primary" id="qRatingApply">套用（只這次）</div>
+    </div>
+  </div>
+</div>
 
       <div class="dock" role="navigation" aria-label="工具列">
         <div class="it" id="historyBtn" title="記錄"><svg viewBox="0 0 24 24"><path d="M7 3h10a2 2 0 0 1 2 2v14l-7-3-7 3V5a2 2 0 0 1 2-2z"></path></svg><div class="txt">記錄</div></div>
