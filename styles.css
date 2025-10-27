@@ -1,0 +1,101 @@
+:root{
+  --bg:#FFF7F3; --card:#ffffff; --text:#1f2937; --muted:#6b7280;
+  --primary:#ff6a3d; --primary-2:#ff8a5b; --accent:#ffedd5; --ring:#ffd4c3; --ok:#16a34a;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0f1115; --card:#151922; --text:#e5e7eb; --muted:#94a3b8; --accent:#1f2937; --ring:#2a2f3a; }
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#fff0ea);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,"Noto Sans TC","PingFang TC","Heiti TC",sans-serif;color:var(--text)}
+.stage{min-height:100%;display:grid;place-items:center;padding:24px}
+.phone{width:390px;height:844px;border-radius:36px;position:relative;overflow:hidden;background:linear-gradient(180deg,#fff, var(--bg) 40%, #fff);box-shadow:0 20px 50px rgba(0,0,0,.20), inset 0 0 0 1px rgba(0,0,0,.08)}
+.notch{position:absolute;left:50%;top:0;transform:translateX(-50%);width:180px;height:28px;background:#111;border-radius:0 0 16px 16px;opacity:.85}
+.app{position:absolute; inset:0; padding:16px; display:flex; flex-direction:column; gap:12px}
+
+/* Topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:6px 2px 8px}
+.brand{display:flex;align-items:center;gap:10px;cursor:pointer}
+.logo{width:36px;height:36px;border-radius:12px;background:conic-gradient(from 210deg at 50% 50%, var(--primary), var(--primary-2));display:grid;place-items:center;box-shadow:0 8px 18px rgba(255,106,61,.35)}
+.logo svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.appname{font-weight:800;letter-spacing:.2px}
+.avatar{width:36px;height:36px;border-radius:999px;background:linear-gradient(180deg,#ffe2d6,#ffd4c3);display:grid;place-items:center;border:1px solid var(--ring);cursor:pointer;position:relative}
+.avatar svg{width:20px;height:20px;stroke:#ff6a3d;fill:none;stroke-width:2.2}
+
+/* Avatar menu */
+.menu{position:absolute;right:0;top:46px;background:var(--card);border:1px solid var(--ring);border-radius:14px;box-shadow:0 16px 32px rgba(0,0,0,.15);width:250px;display:none;overflow:hidden}
+.menu.open{display:block}
+.menu h4{margin:10px 12px 8px;font-size:13px;color:var(--muted)}
+.menu .item{padding:12px 14px;display:flex;gap:10px;align-items:center;cursor:pointer}
+.menu .item:hover{background:#fff7f2}
+.menu .item svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2}
+.menu .note{padding:12px 14px;color:var(--muted);font-size:12px;border-top:1px dashed var(--ring)}
+
+/* Pills */
+.modes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.pill{user-select:none;cursor:pointer;text-align:center;padding:10px 8px;border-radius:12px;background:var(--card);border:1px solid var(--ring);color:var(--muted);font-weight:600;font-size:13px;transition:.2s}
+.pill.active{background:linear-gradient(180deg,var(--primary),var(--primary-2));color:#fff;border-color:transparent;box-shadow:0 8px 22px rgba(255,106,61,.35)}
+
+.card{background:var(--card);border:1px solid var(--ring);border-radius:20px;padding:16px;display:flex;gap:12px;align-items:center}
+.status{font-size:13px;color:var(--muted)}
+
+/* Big radar button */
+.radar-wrap{display:grid;place-items:center;margin:6px 0 2px}
+.radar{width:220px;height:220px;border-radius:999px;display:grid;place-items:center;cursor:pointer;user-select:none;background:radial-gradient(circle at 50% 45%, #ffffff, #fff6f2 50%, #ffe9e2 65%, #ffd8cd 80%);border:8px solid #fff; box-shadow:0 20px 40px rgba(255,106,61,.25), inset 0 0 0 2px var(--ring); position:relative; overflow:hidden;}
+.pulse{position:absolute;inset:0;border-radius:inherit;border:2px solid rgba(255,106,61,.35);animation:pulse 2.2s ease-out infinite}
+.pulse:nth-child(2){animation-delay:.5s} .pulse:nth-child(3){animation-delay:1s}
+@keyframes pulse{0%{transform:scale(.6);opacity:.8}70%{transform:scale(1.2);opacity:.15}100%{transform:scale(1.35);opacity:0}}
+.radar .label{font-size:18px;font-weight:800;color:var(--primary);letter-spacing:.4px}
+.radar .cta{margin-top:6px;font-size:13px;color:#ef6c45}
+.hint{font-size:12px;color:var(--muted);text-align:center;margin-top:6px}
+
+/* Dock */
+.dock{ margin-top:auto;background:var(--card);border:1px solid var(--ring);border-radius:18px;
+  padding:8px 10px;display:grid;grid-template-columns:1fr 1fr auto 1fr 1fr;gap:6px;align-items:center }
+.it{display:grid;place-items:center;gap:4px;padding:8px 0;border-radius:12px;color:var(--muted);user-select:none;cursor:pointer}
+.it svg{width:22px;height:22px;stroke:currentColor;stroke-width:2.2;fill:none}
+.it .txt{font-size:12px}
+.lock{width:68px;height:68px;border-radius:18px;background:linear-gradient(180deg,var(--primary),var(--primary-2));display:grid;place-items:center;box-shadow:0 12px 24px rgba(255,106,61,.35);border:2px solid #fff;cursor:pointer}
+.lock svg{width:30px;height:30px;stroke:#fff;fill:none;stroke-width:2.4}
+
+/* Sheets / Overlays */
+.sheet{position:absolute;left:0;right:0;bottom:-100%;background:var(--card);border-radius:22px 22px 0 0;border:1px solid var(--ring);box-shadow:0 -20px 40px rgba(0,0,0,.25);padding:14px 14px 18px;transition:transform .28s ease-out, bottom .28s ease-out}
+.sheet.open{bottom:0}
+.sheet .handle{width:46px;height:5px;background:#e5e7eb;border-radius:999px;margin:0 auto 12px;opacity:.6}
+.sheet h3{margin:6px 2px 8px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opt{border:1px solid var(--ring);border-radius:14px;padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer;background:var(--card)}
+.opt:hover{background:#fff7f2}
+.opt.active{outline:2px solid var(--primary);background:#fff3ec}
+.opt svg{width:18px;height:18px;stroke:currentColor;stroke-width:2.2;fill:none}
+.sheet .actions{display:flex;gap:10px;margin-top:12px}
+.btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:14px;border:1px solid var(--ring);background:var(--card);color:var(--text);font-weight:700;cursor:pointer}
+.btn.primary{background:linear-gradient(180deg,var(--primary),var(--primary-2));border-color:transparent;color:#fff;box-shadow:0 10px 22px rgba(255,106,61,.35)}
+.btn:active{transform:translateY(1px)}
+
+.overlay{position:absolute;inset:0;background:rgba(0,0,0,.22);display:none;align-items:flex-end;justify-content:center;padding:0}
+.overlay.show{display:flex}
+.panel{width:100%;background:var(--card);border-radius:22px 22px 0 0;border:1px solid var(--ring);max-height:70%;overflow:auto;box-shadow:0 -20px 40px rgba(0,0,0,.25);padding:14px}
+
+.rest{border:1px solid var(--ring);border-radius:14px;padding:12px;margin:8px 0;background:#fff}
+.rest .t{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.tag{padding:2px 8px;border-radius:999px;background:#fff3ec;color:var(--primary);font-size:12px;border:1px solid var(--ring)}
+.meta{font-size:13px;color:var(--muted)}
+.rest .menu{margin-top:6px;font-size:13px;color:#374151}
+.rest .go{margin-top:10px;display:flex;gap:10px}
+.chip{flex:1;padding:10px;border-radius:12px;border:1px solid var(--ring);text-align:center;cursor:pointer}
+.chip.primary{background:linear-gradient(180deg,var(--primary),var(--primary-2));border-color:transparent;color:#fff}
+
+.ctrl{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--ring);border-radius:12px;padding:10px;margin:8px 0;gap:10px}
+.ctrl label{font-size:13px;color:var(--muted)}
+.switch{position:relative;width:46px;height:26px;background:#e5e7eb;border-radius:999px;cursor:pointer}
+.switch::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:999px;transition:.18s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch.on{background:#fecaca}
+.switch.on::after{left:23px;background:#ff6a3d}
+
+.range{width:100%}
+.badge{font-size:12px;color:#374151;background:#fff7f2;border:1px solid var(--ring);padding:2px 8px;border-radius:999px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.pill2{padding:8px 10px;border-radius:12px;border:1px solid var(--ring);cursor:pointer}
+.pill2.active{background:#fff3ec;outline:2px solid var(--primary)}
+
+@media (max-width:420px){.stage{padding:8px}.phone{width:100%;height:calc(100vh - 16px);border-radius:24px}}

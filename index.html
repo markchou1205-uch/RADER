@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>美食雷達 App — v1.4 模擬（分檔版）</title>
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div class="stage">
+  <div class="phone" role="application" aria-label="美食雷達主頁預覽（手機版）">
+    <div class="notch" aria-hidden="true"></div>
+    <div class="app">
+
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="brand" id="brandHome" title="返回首頁">
+          <div class="logo" aria-label="美食雷達 Logo">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 5 L17 16"></path><path d="M8 3 L19 14"></path>
+              <path d="M12 7a5 5 0 1 1 -3.54 8.54"></path>
+              <circle cx="12" cy="12" r="1.6" fill="#fff"></circle>
+            </svg>
+          </div>
+          <div class="appname">美食雷達</div>
+        </div>
+        <div class="avatar" id="avatar">
+          <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5z"></path><path d="M3 22a9 9 0 0 1 18 0"></path></svg>
+          <div class="menu" id="menu">
+            <h4>儀表板</h4>
+            <div class="item" data-panel="plan"><svg viewBox="0 0 24 24"><path d="M20 7l-8 10-4-4-4 5"></path></svg> 訂閱</div>
+            <div class="item" data-panel="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg> 搜尋設定</div>
+            <div class="item" data-panel="basic"><svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7"></path><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83"></path></svg> 基本設定</div>
+            <div class="note">• 訂閱：方案等級與付費<br>• 搜尋設定：價位/評價/範圍/禁忌<br>• 基本設定：AI 語音、提醒等</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode pills -->
+      <div class="modes" role="tablist" aria-label="用餐模式">
+        <div class="pill active" data-mode="casual">一般用餐</div>
+        <div class="pill" data-mode="treat">小確幸</div>
+        <div class="pill" data-mode="important">重要用餐</div>
+        <div class="pill" data-mode="late">點心宵夜</div>
+      </div>
+
+      <!-- Status -->
+      <div class="card" aria-live="polite">
+        <svg width="22" height="22" viewBox="0 0 24 24" style="stroke:var(--ok);fill:none;stroke-width:2.2"><path d="M20 7 L9 18 L4 13"></path></svg>
+        <div>
+          <div style="font-weight:800">已選模式：<span id="modeLabel">一般用餐</span></div>
+          <div class="status" id="modeDesc">近距離、價位優先、評價門檻 3.5★</div>
+        </div>
+      </div>
+
+      <!-- Radar -->
+      <div class="radar-wrap">
+        <div class="radar" id="radarBtn">
+          <div class="pulse"></div><div class="pulse"></div><div class="pulse"></div>
+          <div class="label">啟動美食雷達</div>
+          <div class="cta">Tap to Start</div>
+        </div>
+        <div class="hint">提示：開始後可說「下一間」或點「餐廳列表」</div>
+      </div>
+
+      <!-- Tip -->
+      <div class="card" style="gap:10px">
+        <div class="status">快速提示：點擊下方中央的<strong>快速鎖定</strong>選單開始</div>
+      </div>
+
+      <!-- Dock -->
+      <div class="dock" role="navigation" aria-label="工具列">
+        <div class="it" id="historyBtn" title="記錄"><svg viewBox="0 0 24 24"><path d="M7 3h10a2 2 0 0 1 2 2v14l-7-3-7 3V5a2 2 0 0 1 2-2z"></path></svg><div class="txt">記錄</div></div>
+        <div class="it" id="favBtn" title="最愛"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-.96-.96a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.74-8.74a5.5 5.5 0 0 0 0-7.88z"></path></svg><div class="txt">最愛</div></div>
+        <div class="lock" id="quickBtn" title="快速鎖定"><svg viewBox="0 0 24 24"><path d="M12 3v6M12 15v6M21 12h-6M9 12H3"></path></svg></div>
+        <div class="it" id="settingsBtn" title="設置"><svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7"></path><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83"></path></svg><div class="txt">設置</div></div>
+        <div class="it" id="planBtnDock" title="訂閱"><svg viewBox="0 0 24 24"><path d="M20 7l-8 10-4-4-4 5"></path></svg><div class="txt">訂閱</div></div>
+      </div>
+    </div>
+
+    <!-- Quick Lock sheet -->
+    <div class="sheet" id="sheetMode" aria-modal="true" role="dialog">
+      <div class="handle"></div>
+      <h3>選擇用餐模式</h3>
+      <div class="grid" id="modeGrid">
+        <div class="opt active" data-mode="casual"><svg viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M9 17h6"></path></svg> 一般用餐</div>
+        <div class="opt" data-mode="treat"><svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"></path></svg> 小確幸</div>
+        <div class="opt" data-mode="important"><svg viewBox="0 0 24 24"><path d="M3 11h18M4 7l8-4 8 4v6a8 8 0 1 1-16 0z"></path></svg> 重要用餐</div>
+        <div class="opt" data-mode="late"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9"></path><path d="M12 7v5l3 3"></path></svg> 點心宵夜</div>
+      </div>
+
+      <h3 style="margin-top:10px">選擇用餐人數</h3>
+      <div class="grid" id="peopleGrid">
+        <div class="opt active" data-pp="1">1 人</div>
+        <div class="opt" data-pp="2-3">2–3 人</div>
+        <div class="opt" data-pp="4-6">4–6 人</div>
+        <div class="opt" data-pp="7+">7 人以上</div>
+      </div>
+
+      <div class="actions">
+        <div class="btn" id="cancel1">取消</div>
+        <div class="btn primary" id="startScan">開始搜尋</div>
+      </div>
+    </div>
+
+    <!-- Search Settings sheet -->
+    <div class="sheet" id="sheetSearch" aria-modal="true" role="dialog">
+      <div class="handle"></div>
+      <h3>搜尋設定</h3>
+      <div class="ctrl"><label>評價門檻</label>
+        <div class="row">
+          <div class="pill2 active" data-rating="3.5">≥3.5★</div>
+          <div class="pill2" data-rating="4.0">≥4.0★</div>
+          <div class="pill2" data-rating="4.5">≥4.5★</div>
+        </div>
+      </div>
+      <div class="ctrl"><label>價位</label>
+        <div class="row">
+          <div class="pill2 active" data-price="$">$</div>
+          <div class="pill2 active" data-price="$$">$$</div>
+          <div class="pill2" data-price="$$$">$$$</div>
+          <div class="pill2" data-price="$$$$">$$$$</div>
+        </div>
+      </div>
+      <div class="ctrl"><label>距離（公里） <span class="badge" id="distBadge">2.0</span></label>
+        <input type="range" min="0.5" max="10" step="0.5" value="2" id="distRange" class="range"/>
+      </div>
+      <div class="ctrl"><label>禁忌/過敏</label>
+        <div class="row">
+          <div class="pill2" data-ban="no-beef">不吃牛</div>
+          <div class="pill2" data-ban="no-pork">不吃豬</div>
+          <div class="pill2" data-ban="vegetarian">素食</div>
+          <div class="pill2" data-ban="peanut">花生過敏</div>
+        </div>
+      </div>
+      <div class="actions">
+        <div class="btn" id="closeSearch">關閉</div>
+        <div class="btn primary" id="saveSearch">儲存</div>
+      </div>
+    </div>
+
+    <!-- Basic Settings sheet -->
+    <div class="sheet" id="sheetBasic" aria-modal="true" role="dialog">
+      <div class="handle"></div>
+      <h3>基本設定</h3>
+      <div class="ctrl"><label>語音播報</label><div id="voiceSwitch" class="switch"></div></div>
+      <div class="ctrl"><label>語音喚醒（體驗）</label><div id="hotwordSwitch" class="switch"></div></div>
+      <div class="ctrl"><label>主題顏色（示意）</label>
+        <div class="row">
+          <div class="pill2 active" data-theme="warm">暖色</div>
+          <div class="pill2" data-theme="cool">冷色</div>
+          <div class="pill2" data-theme="mono">灰白</div>
+        </div>
+      </div>
+      <div class="actions"><div class="btn" id="closeBasic">關閉</div><div class="btn primary" id="saveBasic">儲存</div></div>
+      <div class="status" style="margin-top:4px">＊Web 版語音喚醒需使用者互動後才可啟用，且不同瀏覽器支援度不同（示意）。</div>
+    </div>
+
+    <!-- History overlay -->
+    <div class="overlay" id="overlayHistory">
+      <div class="panel">
+        <h3>瀏覽與到訪記錄</h3>
+        <div class="rest"><div class="t"><div style="font-weight:800">吉川壽司</div><span class="tag">已到訪</span></div><div class="meta">10/20 · ⭐ 4.6 · 600 公尺</div></div>
+        <div class="rest"><div class="t"><div style="font-weight:800">阿義便當</div><span class="tag">瀏覽</span></div><div class="meta">10/21 · ⭐ 4.3 · 350 公尺</div></div>
+        <div class="go"><div class="chip" id="clearHistory">清除記錄</div><div class="chip" id="closeHist">關閉</div></div>
+      </div>
+    </div>
+
+    <!-- Favorites overlay -->
+    <div class="overlay" id="overlayFav">
+      <div class="panel">
+        <h3>我的最愛</h3>
+        <div class="rest">
+          <div class="t"><div style="font-weight:800">初晴咖啡</div><span class="tag">咖啡</span></div>
+          <div class="meta">⭐ 4.5（988）· 1.1 公里</div>
+          <div class="go"><div class="chip" id="favToMap">地圖顯示</div><div class="chip primary" id="favToNav">導航</div></div>
+        </div>
+        <div class="go"><div class="chip" id="closeFav">關閉</div></div>
+      </div>
+    </div>
+
+    <!-- Scan + Results -->
+    <div class="overlay" id="overlay">
+      <div class="panel" id="panel">
+        <div class="scan" id="scanBox">
+          <div class="spin"></div>
+          <div style="margin-top:10px;color:var(--muted)">雷達掃描中…</div>
+        </div>
+        <div id="resultBox" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <h3 style="margin:6px 2px 8px">推薦結果（依優先順序）</h3>
+            <div><span class="badge" id="peopleBadge">人數：1</span></div>
+          </div>
+
+          <div class="rest" data-name="吉川壽司">
+            <div class="t"><div style="font-weight:800">吉川壽司</div><span class="tag">日式 / $$</span></div>
+            <div class="meta">⭐ 4.6（1,238）· 600 公尺 · 可能繞路 2 分</div>
+            <div class="menu">菜單：鮭魚握壽司、海鮮丼、炙燒鮭魚肚</div>
+            <div class="go">
+              <div class="chip" data-act="detail">看詳情</div>
+              <div class="chip" data-act="map">地圖顯示</div>
+              <div class="chip primary" data-act="nav">導航</div>
+            </div>
+          </div>
+
+          <div class="rest" data-name="阿義便當">
+            <div class="t"><div style="font-weight:800">阿義便當</div><span class="tag">台式 / $</span></div>
+            <div class="meta">⭐ 4.3（562）· 350 公尺 · 0 分繞路</div>
+            <div class="menu">菜單：排骨飯、雞腿飯、滷肉飯</div>
+            <div class="go">
+              <div class="chip" data-act="detail">看詳情</div>
+              <div class="chip" data-act="map">地圖顯示</div>
+              <div class="chip primary" data-act="nav">導航</div>
+            </div>
+          </div>
+
+          <div class="rest" data-name="初晴咖啡">
+            <div class="t"><div style="font-weight:800">初晴咖啡</div><span class="tag">咖啡 / $$</span></div>
+            <div class="meta">⭐ 4.5（988）· 1.1 公里 · 繞路 4 分</div>
+            <div class="menu">菜單：拿鐵、巴斯克、嫩雞帕里尼</div>
+            <div class="go">
+              <div class="chip" data-act="detail">看詳情</div>
+              <div class="chip" data-act="map">地圖顯示</div>
+              <div class="chip primary" data-act="nav">導航</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Restaurant Detail sheet -->
+    <div class="sheet" id="sheetDetail" aria-modal="true" role="dialog">
+      <div class="handle"></div>
+      <h3 id="detailTitle">餐廳詳情</h3>
+      <div class="meta" id="detailMeta">⭐ 4.6（1,238）· 日式 / $$ · 600 公尺</div>
+      <div class="row" style="margin:8px 0">
+        <div class="badge">營業中</div>
+        <div class="badge">可外帶</div>
+        <div class="badge">可刷卡</div>
+      </div>
+      <div class="rest">
+        <div class="t"><div style="font-weight:800">熱門菜單</div></div>
+        <div class="menu" id="detailMenu">鮭魚握壽司、海鮮丼、炙燒鮭魚肚</div>
+      </div>
+      <div class="actions">
+        <div class="btn" id="closeDetail">關閉</div>
+        <div class="btn" id="detailMap">地圖顯示</div>
+        <div class="btn primary" id="detailNav">導航</div>
+      </div>
+    </div>
+
+    <!-- Plan overlay -->
+    <div class="overlay" id="overlayPlan">
+      <div class="panel">
+        <h3 style="margin:6px 2px 8px">訂閱方案</h3>
+        <div class="rest"><div class="t"><div style="font-weight:800">目前：免費方案</div><span class="tag">可升級</span></div><div class="meta">功能：一般使用、廣告、每日掃描上限</div></div>
+        <div class="rest"><div class="t"><div style="font-weight:800">進階方案</div><span class="tag">NT$50/月</span></div><div class="meta">去廣告、地區離線包、更多掃描次數、語音換膚</div><div class="go"><div class="chip primary" onclick="alert('（Demo）前往付款流程')">升級</div></div></div>
+        <div class="rest"><div class="t"><div style="font-weight:800">專業方案</div><span class="tag">NT$120/月</span></div><div class="meta">全部功能 + 優先客服 + 高速查詢</div><div class="go"><div class="chip primary" onclick="alert('（Demo）前往付款流程')">升級</div></div></div>
+        <div class="go"><div class="chip" onclick="document.getElementById('overlayPlan').classList.remove('show')">關閉</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script src="./app.js"></script>
+</body>
+</html>
