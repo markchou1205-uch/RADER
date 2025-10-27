@@ -154,7 +154,11 @@ $('#startScan').addEventListener('click', ()=>{
     scanBox.style.display='none';
     resultBox.style.display='block';
     modeLabel.textContent = modeMeta[currentMode].label;
-    modeDesc.textContent  = modeMeta[currentMode].desc + ' · 人數：' + currentPeople;
+    const __pf = effectivePrefs();
+    const __km = (__pf.distHM ? (__pf.distHM/10).toFixed(1) : '—');
+    const __price = (__pf.priceAmt!=null ? ` · 預算≤${__pf.priceAmt}` : '');
+    modeDesc.textContent = modeMeta[currentMode].desc + ` · 人數：${currentPeople} · 距離≤${__km}km` + __price;
+
     $('#peopleBadge').textContent = '人數：' + currentPeople;
   }, 900);
 });
@@ -188,6 +192,136 @@ $('#closeFav').addEventListener('click', ()=>closeOverlay('overlayFav'));
 $('#clearHistory').addEventListener('click', ()=>alert('（Demo）記錄已清除'));
 $('#favToMap').addEventListener('click', ()=>confirmNav('初晴咖啡','map'));
 $('#favToNav').addEventListener('click', ()=>confirmNav('初晴咖啡','nav'));
+/* ====== One-time filters (今天想吃) ====== */
+const TODAY = {active:false}; // 例如 {priceCap:500, priceAmt:320, distHM:12, cats:['拉麵'], rating:'4.0'}
+
+function getQueryParams(){
+  const q = {}; const s = location.search.slice(1).split('&').filter(Boolean);
+  for(const kv of s){ const [k,v] = kv.split('='); q[decodeURIComponent(k)] = decodeURIComponent(v||''); }
+  return q;
+}
+const URLQ = getQueryParams();
+const DRIVE_MODE = (URLQ.mode === 'drive'); // ?mode=drive -> 移動中模式（隱藏今天想吃）
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  const box = document.getElementById('qbarBox');
+  if(!box) return;
+  box.style.display = DRIVE_MODE ? 'none' : 'flex';
+});
+
+// 種類 chips（與 CATEGORIES_POOL 共用）
+function renderQuickCats(){
+  const pool = CATEGORIES_POOL.slice(0, 14); // 精簡一些，避免太擠
+  const row = document.getElementById('qCatRow');
+  if(!row) return;
+  row.innerHTML = pool.map(c=>`<div class="pill2 ${TODAY.cats?.includes(c)?'active':''}" data-qcat="${c}">${c}</div>`).join('');
+  row.querySelectorAll('.pill2').forEach(el=>el.addEventListener('click', ()=>el.classList.toggle('active')));
+}
+
+// 開/關 小面板
+function openQPanel(key){
+  document.querySelectorAll('.qbtn').forEach(b=>b.classList.toggle('active', b.dataset.q===key));
+  document.querySelectorAll('.qpanel').forEach(p=>p.classList.remove('show'));
+  const p = document.getElementById(`qp-${key}`); if(p) p.classList.add('show');
+  if(key==='cats') renderQuickCats();
+}
+function closeQPanels(){
+  document.querySelectorAll('.qbtn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.qpanel').forEach(p=>p.classList.remove('show'));
+}
+
+// 點按鈕展開；點畫面其它處收合
+document.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.qbtn');
+  if(btn){ openQPanel(btn.dataset.q); e.stopPropagation(); return; }
+  if(!e.target.closest('.qpanel')) closeQPanels();
+});
+
+// 價格 quick
+(function(){
+  const capSel = document.getElementById('qPriceCap');
+  const range  = document.getElementById('qPriceRange');
+  const prev   = document.getElementById('qPricePreview');
+  if(!capSel) return;
+  const syncCap = ()=>{ const cap = parseInt(capSel.value,10)||500; range.max = cap; if(+range.value>cap) range.value=cap; prev.textContent=range.value; };
+  capSel.addEventListener('change', syncCap); syncCap();
+  range.addEventListener('input', e=> prev.textContent = e.target.value);
+  document.getElementById('qPriceApply').addEventListener('click', ()=>{
+    TODAY.priceCap = parseInt(capSel.value,10);
+    TODAY.priceAmt = parseInt(range.value,10);
+    TODAY.active = true;
+    document.getElementById('qb-price').textContent = `≤ ${TODAY.priceAmt}`;
+    closeQPanels();
+  });
+  document.getElementById('qPriceClear').addEventListener('click', ()=>{
+    delete TODAY.priceCap; delete TODAY.priceAmt;
+    document.getElementById('qb-price').textContent = '';
+    closeQPanels();
+  });
+})();
+
+// 距離 quick
+(function(){
+  const range  = document.getElementById('qDistRange');
+  const prev   = document.getElementById('qDistPreview');
+  if(!range) return;
+  range.addEventListener('input', e=> prev.textContent = e.target.value);
+  document.getElementById('qDistApply').addEventListener('click', ()=>{
+    TODAY.distHM = parseInt(range.value,10);
+    TODAY.active = true;
+    document.getElementById('qb-dist').textContent = `≤ ${TODAY.distHM}`;
+    closeQPanels();
+  });
+  document.getElementById('qDistClear').addEventListener('click', ()=>{
+    delete TODAY.distHM;
+    document.getElementById('qb-dist').textContent = '';
+    closeQPanels();
+  });
+})();
+
+// 種類 quick
+(function(){
+  const apply = ()=>{
+    const cats = Array.from(document.querySelectorAll('#qCatRow .pill2.active')).map(x=>x.dataset.qcat);
+    if(cats.length){ TODAY.cats = cats; TODAY.active = true; document.getElementById('qb-cats').textContent = cats.length===1?cats[0]:`${cats.length}項`; }
+    else { delete TODAY.cats; document.getElementById('qb-cats').textContent = ''; }
+    closeQPanels();
+  };
+  const clear = ()=>{ document.querySelectorAll('#qCatRow .pill2.active').forEach(x=>x.classList.remove('active')); delete TODAY.cats; document.getElementById('qb-cats').textContent = ''; closeQPanels(); };
+  document.getElementById('qCatsApply')?.addEventListener('click', apply);
+  document.getElementById('qCatsClear')?.addEventListener('click', clear);
+})();
+
+// 評價 quick
+(function(){
+  const range  = document.getElementById('qRatingRange');
+  const prev   = document.getElementById('qRatingPreview');
+  if(!range) return;
+  range.addEventListener('input', e=> prev.textContent = e.target.value + '★');
+  document.getElementById('qRatingApply').addEventListener('click', ()=>{
+    TODAY.rating = range.value;
+    TODAY.active = true;
+    document.getElementById('qb-rating').textContent = `≥ ${TODAY.rating}★`;
+    closeQPanels();
+  });
+  document.getElementById('qRatingClear').addEventListener('click', ()=>{
+    delete TODAY.rating;
+    document.getElementById('qb-rating').textContent = '';
+    closeQPanels();
+  });
+})();
+
+// 合併「模式偏好」＋「今天想吃」成一次查詢用 payload（Demo）
+function effectivePrefs(){
+  const base = JSON.parse(localStorage.getItem('FR_PREFS') || 'null') || DEFAULT_PREFS;
+  const pf = {...(base[currentMode] || DEFAULT_PREFS[currentMode])};
+  if(TODAY.priceCap!=null) pf.priceCap = TODAY.priceCap;
+  if(TODAY.priceAmt!=null) pf.priceAmt = TODAY.priceAmt;
+  if(TODAY.distHM!=null)   pf.distHM   = TODAY.distHM;
+  if(TODAY.cats)           pf.cats     = TODAY.cats;
+  if(TODAY.rating!=null)   pf.rating   = TODAY.rating;
+  return pf;
+}
 
 /* ====== Enhanced Settings: per-mode preferences + globals ====== */
 const DEFAULT_PREFS = {
