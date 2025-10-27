@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>美食雷達 App — v1.4 模擬（分檔版）</title>
+<title>美食雷達 App — v1.4 模擬（分檔＋設置強化）</title>
 <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
@@ -12,7 +12,6 @@
     <div class="notch" aria-hidden="true"></div>
     <div class="app">
 
-      <!-- Topbar -->
       <div class="topbar">
         <div class="brand" id="brandHome" title="返回首頁">
           <div class="logo" aria-label="美食雷達 Logo">
@@ -29,14 +28,13 @@
           <div class="menu" id="menu">
             <h4>儀表板</h4>
             <div class="item" data-panel="plan"><svg viewBox="0 0 24 24"><path d="M20 7l-8 10-4-4-4 5"></path></svg> 訂閱</div>
-            <div class="item" data-panel="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg> 搜尋設定</div>
+            <div class="item" data-panel="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg> 設置（搜尋偏好）</div>
             <div class="item" data-panel="basic"><svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7"></path><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83"></path></svg> 基本設定</div>
-            <div class="note">• 訂閱：方案等級與付費<br>• 搜尋設定：價位/評價/範圍/禁忌<br>• 基本設定：AI 語音、提醒等</div>
+            <div class="note">• 設置：為各模式設定類別/價位/評價/距離/冷氣…等<br>• 基本設定：語音、提醒、主題</div>
           </div>
         </div>
       </div>
 
-      <!-- Mode pills -->
       <div class="modes" role="tablist" aria-label="用餐模式">
         <div class="pill active" data-mode="casual">一般用餐</div>
         <div class="pill" data-mode="treat">小確幸</div>
@@ -44,7 +42,6 @@
         <div class="pill" data-mode="late">點心宵夜</div>
       </div>
 
-      <!-- Status -->
       <div class="card" aria-live="polite">
         <svg width="22" height="22" viewBox="0 0 24 24" style="stroke:var(--ok);fill:none;stroke-width:2.2"><path d="M20 7 L9 18 L4 13"></path></svg>
         <div>
@@ -53,7 +50,6 @@
         </div>
       </div>
 
-      <!-- Radar -->
       <div class="radar-wrap">
         <div class="radar" id="radarBtn">
           <div class="pulse"></div><div class="pulse"></div><div class="pulse"></div>
@@ -63,12 +59,10 @@
         <div class="hint">提示：開始後可說「下一間」或點「餐廳列表」</div>
       </div>
 
-      <!-- Tip -->
       <div class="card" style="gap:10px">
         <div class="status">快速提示：點擊下方中央的<strong>快速鎖定</strong>選單開始</div>
       </div>
 
-      <!-- Dock -->
       <div class="dock" role="navigation" aria-label="工具列">
         <div class="it" id="historyBtn" title="記錄"><svg viewBox="0 0 24 24"><path d="M7 3h10a2 2 0 0 1 2 2v14l-7-3-7 3V5a2 2 0 0 1 2-2z"></path></svg><div class="txt">記錄</div></div>
         <div class="it" id="favBtn" title="最愛"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-.96-.96a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.74-8.74a5.5 5.5 0 0 0 0-7.88z"></path></svg><div class="txt">最愛</div></div>
@@ -103,40 +97,65 @@
       </div>
     </div>
 
-    <!-- Search Settings sheet -->
+    <!-- Search Settings sheet (expanded per-mode prefs) -->
     <div class="sheet" id="sheetSearch" aria-modal="true" role="dialog">
       <div class="handle"></div>
-      <h3>搜尋設定</h3>
-      <div class="ctrl"><label>評價門檻</label>
-        <div class="row">
-          <div class="pill2 active" data-rating="3.5">≥3.5★</div>
-          <div class="pill2" data-rating="4.0">≥4.0★</div>
-          <div class="pill2" data-rating="4.5">≥4.5★</div>
+      <h3>設置（搜尋偏好）</h3>
+
+      <div class="section">用餐模式</div>
+      <div class="tabs" id="modeTabs">
+        <div class="tab active" data-mode="casual">一般用餐</div>
+        <div class="tab" data-mode="treat">小確幸</div>
+        <div class="tab" data-mode="important">重要用餐</div>
+        <div class="tab" data-mode="late">點心宵夜</div>
+      </div>
+
+      <div id="modePrefBox"></div>
+
+      <div class="sep"></div>
+      <div class="section">通用限制（所有模式套用）</div>
+
+      <div class="ctrl">
+        <label>飲食禁忌</label>
+        <div class="row" id="dietRow">
+          <div class="pill2" data-diet="vegetarian">素食</div>
+          <div class="pill2" data-diet="vegan">全素</div>
+          <div class="pill2" data-diet="no-beef">不吃牛</div>
+          <div class="pill2" data-diet="no-pork">不吃豬</div>
+          <div class="pill2" data-diet="no-seafood">不吃海鮮</div>
+          <div class="pill2" data-diet="halal">清真友善</div>
         </div>
       </div>
-      <div class="ctrl"><label>價位</label>
-        <div class="row">
-          <div class="pill2 active" data-price="$">$</div>
-          <div class="pill2 active" data-price="$$">$$</div>
-          <div class="pill2" data-price="$$$">$$$</div>
-          <div class="pill2" data-price="$$$$">$$$$</div>
+
+      <div class="ctrl">
+        <label>過敏項目</label>
+        <div class="row" id="allergyRow">
+          <div class="pill2" data-allergy="peanut">花生</div>
+          <div class="pill2" data-allergy="milk">牛奶</div>
+          <div class="pill2" data-allergy="egg">蛋</div>
+          <div class="pill2" data-allergy="soy">大豆</div>
+          <div class="pill2" data-allergy="wheat">小麥/麩質</div>
+          <div class="pill2" data-allergy="sesame">芝麻</div>
         </div>
       </div>
-      <div class="ctrl"><label>距離（公里） <span class="badge" id="distBadge">2.0</span></label>
-        <input type="range" min="0.5" max="10" step="0.5" value="2" id="distRange" class="range"/>
-      </div>
-      <div class="ctrl"><label>禁忌/過敏</label>
-        <div class="row">
-          <div class="pill2" data-ban="no-beef">不吃牛</div>
-          <div class="pill2" data-ban="no-pork">不吃豬</div>
-          <div class="pill2" data-ban="vegetarian">素食</div>
-          <div class="pill2" data-ban="peanut">花生過敏</div>
+
+      <div class="ctrl">
+        <label>可接受的服務</label>
+        <div class="checkchips">
+          <label class="cc"><input type="checkbox" data-global="takeout"> 可外帶</label>
+          <label class="cc"><input type="checkbox" data-global="delivery"> 可外送</label>
+          <label class="cc"><input type="checkbox" data-global="parking"> 附近可停車</label>
+          <label class="cc"><input type="checkbox" data-global="wheelchair"> 無障礙友善</label>
+          <label class="cc"><input type="checkbox" data-global="kid"> 親子友善</label>
+          <label class="cc"><input type="checkbox" data-global="pet"> 可攜帶寵物</label>
         </div>
       </div>
+
       <div class="actions">
         <div class="btn" id="closeSearch">關閉</div>
         <div class="btn primary" id="saveSearch">儲存</div>
       </div>
+      <div class="small">＊這些偏好僅作為搜尋時的預設條件，仍可在結果頁重新排序/篩選。</div>
     </div>
 
     <!-- Basic Settings sheet -->

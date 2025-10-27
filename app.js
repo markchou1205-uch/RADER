@@ -1,3 +1,4 @@
+
 /* ====== State ====== */
 const modeMeta = {
   casual:{label:'一般用餐',desc:'近距離、價位優先、評價門檻 3.5★'},
@@ -70,7 +71,6 @@ $('#settingsBtn').addEventListener('click', ()=>openSheet('sheetSearch'));
 /* ====== Quick Lock ====== */
 $('#quickBtn').addEventListener('click', ()=>{
   resetUI();
-  // reflect current mode & people
   $$('#modeGrid .opt').forEach(o=>o.classList.toggle('active', o.dataset.mode===currentMode));
   $$('#peopleGrid .opt').forEach(o=>o.classList.remove('active'));
   const def = document.querySelector('#peopleGrid .opt[data-pp="'+currentPeople+'"]');
@@ -137,28 +137,111 @@ $('#clearHistory').addEventListener('click', ()=>alert('（Demo）記錄已清�
 $('#favToMap').addEventListener('click', ()=>confirmNav('初晴咖啡','map'));
 $('#favToNav').addEventListener('click', ()=>confirmNav('初晴咖啡','nav'));
 
-/* ====== Search Settings ====== */
-function togglePill2(el){ el.classList.toggle('active'); }
-$$('#sheetSearch .pill2').forEach(el=>{
-  el.addEventListener('click', ()=>{
-    if(el.dataset.rating){ $$('[data-rating]').forEach(x=>x.classList.remove('active')); }
-    togglePill2(el);
-  });
+/* ====== Enhanced Settings: per-mode preferences + globals ====== */
+const DEFAULT_PREFS = {
+  casual:    { cats:['小吃店','便當店','快炒店'], price:['$','$$'], rating:'3.5', dist:2.0, ac:true, seat:true, wait:'10', noise:'中', openNow:true },
+  treat:     { cats:['日式','韓式','義式','早午餐'], price:['$$','$$$'], rating:'4.0', dist:3.0, ac:true, seat:true, wait:'20', noise:'低', openNow:true },
+  important: { cats:['精緻餐廳','牛排館','無菜單'], price:['$$$','$$$$'], rating:'4.5', dist:6.0, ac:true, seat:true, wait:'30', noise:'低', openNow:true, reserve:true },
+  late:      { cats:['宵夜','炸物','甜點','手搖飲'], price:['$','$$'], rating:'3.5', dist:2.5, ac:false, seat:false, wait:'10', noise:'中', openNow:true }
+};
+let PREFS = JSON.parse(localStorage.getItem('FR_PREFS') || 'null') || DEFAULT_PREFS;
+const CATEGORIES_POOL = ['小吃店','便當店','快炒店','牛肉麵','火鍋','日式','韓式','泰式','義式','美式','越式',
+  '早午餐','咖啡','甜點','宵夜','炸物','手搖飲','素食','精緻餐廳','牛排館','無菜單'];
+function catChip(cat, active){ return `<div class="pill2 ${active?'active':''}" data-cat="${cat}">${cat}</div>`; }
+function priceChip(p, active){ return `<div class="pill2 ${active?'active':''}" data-price="${p}">${p}</div>`; }
+function renderModePref(mode){
+  const pf = PREFS[mode] || DEFAULT_PREFS[mode];
+  const catsHTML = CATEGORIES_POOL.map(c=>catChip(c, pf.cats.includes(c))).join('');
+  const prices = ['$','$$','$$$','$$$$'].map(p=>priceChip(p, pf.price.includes(p))).join('');
+  const acOn = pf.ac ? 'on':''; const seatOn = pf.seat ? 'on':'';
+  const openChecked = pf.openNow ? 'checked':''; const reserveChecked = pf.reserve ? 'checked':'';
+  $('#modePrefBox').innerHTML = `
+    <div class="ctrl"><label>餐廳類別</label><div class="row" id="catRow">${catsHTML}</div></div>
+    <div class="ctrl"><label>價位</label><div class="row" id="priceRow">${prices}</div></div>
+    <div class="ctrl"><label>評價門檻 <span class="badge" id="ratingBadge">${pf.rating}★</span></label>
+      <input type="range" min="3.0" max="5.0" step="0.1" value="${pf.rating}" id="ratingRange" class="range"/>
+    </div>
+    <div class="ctrl"><label>距離（公里） <span class="badge" id="distBadge2">${pf.dist}</span></label>
+      <input type="range" min="0.5" max="10" step="0.5" value="${pf.dist}" id="distRange2" class="range"/>
+    </div>
+    <div class="ctrl"><label>有無冷氣</label><div id="acSwitch" class="switch ${acOn}"></div></div>
+    <div class="ctrl"><label>可內用座位</label><div id="seatSwitch" class="switch ${seatOn}"></div></div>
+    <div class="ctrl"><label>等候容忍（分鐘） <span class="badge2" id="waitBadge">${pf.wait}</span></label>
+      <div class="rangeRow"><input type="range" min="0" max="60" step="5" value="${pf.wait}" id="waitRange" class="range"/></div>
+    </div>
+    <div class="ctrl"><label>噪音容忍</label>
+      <div class="row" id="noiseRow">
+        <div class="pill2 ${pf.noise==='低'?'active':''}" data-noise="低">低</div>
+        <div class="pill2 ${pf.noise==='中'?'active':''}" data-noise="中">中</div>
+        <div class="pill2 ${pf.noise==='高'?'active':''}" data-noise="高">高</div>
+      </div>
+    </div>
+    <div class="ctrl">
+      <label>即時條件</label>
+      <div class="checkchips">
+        <label class="cc"><input type="checkbox" id="openNow" ${openChecked}> 僅顯示「營業中」</label>
+        <label class="cc"><input type="checkbox" id="needReserve" ${reserveChecked}> 可接受「需訂位」</label>
+      </div>
+    </div>
+  `;
+  $('#ratingRange').addEventListener('input', e=>$('#ratingBadge').textContent = e.target.value + '★');
+  $('#distRange2').addEventListener('input', e=>$('#distBadge2').textContent = (+e.target.value).toFixed(1));
+  $('#waitRange').addEventListener('input', e=>$('#waitBadge').textContent = e.target.value);
+  function toggleSwitch(id){ const el = document.getElementById(id); el.addEventListener('click', ()=>el.classList.toggle('on')); }
+  toggleSwitch('acSwitch'); toggleSwitch('seatSwitch');
+  $$('#catRow .pill2').forEach(el=>el.addEventListener('click', ()=>el.classList.toggle('active')));
+  $$('#priceRow .pill2').forEach(el=>el.addEventListener('click', ()=>el.classList.toggle('active')));
+  $$('#noiseRow .pill2').forEach(el=>el.addEventListener('click', ()=>{ $$('#noiseRow .pill2').forEach(x=>x.classList.remove('active')); el.classList.add('active'); }));
+}
+function currentModeFromTabs(){ const el = document.querySelector('#modeTabs .tab.active'); return el ? el.dataset.mode : 'casual'; }
+document.addEventListener('DOMContentLoaded', ()=>{ renderModePref('casual'); });
+document.addEventListener('click', (e)=>{
+  const tab = e.target.closest('#modeTabs .tab'); if(!tab) return;
+  $$('#modeTabs .tab').forEach(x=>x.classList.remove('active')); tab.classList.add('active'); renderModePref(tab.dataset.mode);
 });
-const distRange = $('#distRange');
-const distBadge = $('#distBadge');
-distRange.addEventListener('input', ()=>distBadge.textContent = (+distRange.value).toFixed(1));
-$('#closeSearch').addEventListener('click', ()=>closeSheet('sheetSearch'));
-$('#saveSearch').addEventListener('click', ()=>{ alert('（Demo）已儲存搜尋設定'); closeSheet('sheetSearch'); });
+document.getElementById('closeSearch').addEventListener('click', ()=>closeSheet('sheetSearch'));
+document.getElementById('saveSearch').addEventListener('click', (evt)=>{
+  evt.stopPropagation();
+  const mode = currentModeFromTabs();
+  const cats  = Array.from(document.querySelectorAll('#catRow .pill2.active')).map(x=>x.dataset.cat);
+  const price = Array.from(document.querySelectorAll('#priceRow .pill2.active')).map(x=>x.dataset.price);
+  const rating= document.getElementById('ratingRange').value;
+  const dist  = parseFloat(document.getElementById('distRange2').value);
+  const ac    = document.getElementById('acSwitch').classList.contains('on');
+  const seat  = document.getElementById('seatSwitch').classList.contains('on');
+  const wait  = document.getElementById('waitRange').value;
+  const noise = (document.querySelector('#noiseRow .pill2.active')?.dataset.noise) || '中';
+  const openNow = document.getElementById('openNow').checked;
+  const reserve = document.getElementById('needReserve').checked;
+  const PREFS = JSON.parse(localStorage.getItem('FR_PREFS') || 'null') || DEFAULT_PREFS;
+  PREFS[mode] = { cats, price, rating, dist, ac, seat, wait, noise, openNow, reserve };
+  const diet = Array.from(document.querySelectorAll('#dietRow .pill2.active')).map(x=>x.dataset.diet);
+  const allergy = Array.from(document.querySelectorAll('#allergyRow .pill2.active')).map(x=>x.dataset.allergy);
+  const globals = {
+    takeout: !!document.querySelector('[data-global="takeout"]')?.checked,
+    delivery: !!document.querySelector('[data-global="delivery"]')?.checked,
+    parking: !!document.querySelector('[data-global="parking"]')?.checked,
+    wheelchair: !!document.querySelector('[data-global="wheelchair"]')?.checked,
+    kid: !!document.querySelector('[data-global="kid"]')?.checked,
+    pet: !!document.querySelector('[data-global="pet"]')?.checked,
+    diet, allergy
+  };
+  localStorage.setItem('FR_PREFS', JSON.stringify(PREFS));
+  localStorage.setItem('FR_GLOBALS', JSON.stringify(globals));
+  alert('（Demo）偏好已儲存');
+  closeSheet('sheetSearch');
+});
+/* Bind toggle behavior for diet/allergy pills */
+document.addEventListener('click', (e)=>{
+  const pill = e.target.closest('#dietRow .pill2, #allergyRow .pill2');
+  if(pill){ pill.classList.toggle('active'); }
+});
 
 /* ====== Basic Settings ====== */
-function bindSwitch(id){
-  const el = document.getElementById(id);
-  el.addEventListener('click', ()=>el.classList.toggle('on'));
-}
+function bindSwitch(id){ const el = document.getElementById(id); el.addEventListener('click', ()=>el.classList.toggle('on')); }
 bindSwitch('voiceSwitch'); bindSwitch('hotwordSwitch');
-$('#closeBasic').addEventListener('click', ()=>closeSheet('sheetBasic'));
-$('#saveBasic').addEventListener('click', ()=>{ alert('（Demo）已儲存基本設定'); closeSheet('sheetBasic'); });
+document.getElementById('closeBasic').addEventListener('click', ()=>closeSheet('sheetBasic'));
+document.getElementById('saveBasic').addEventListener('click', ()=>{ alert('（Demo）已儲存基本設定'); closeSheet('sheetBasic'); });
 
 /* ====== Nav confirm ====== */
 window.confirmNav = function(name, action){
