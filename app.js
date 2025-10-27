@@ -98,10 +98,27 @@ $('#radarBtn').addEventListener('click', ()=>{
 });
 
 /* ====== Dock ====== */
-$('#historyBtn').addEventListener('click', ()=>closeAllMenus(); openOverlay('overlayHistory'));
-$('#favBtn').addEventListener('click', ()=>closeAllMenus(); openOverlay('overlayFav'));
-$('#planBtnDock').addEventListener('click', ()=>closeAllMenus(); openOverlay('overlayPlan'));
-$('#settingsBtn').addEventListener('click', ()=>openSheet('sheetSearch'));
+$('#historyBtn').addEventListener('click', () => {
+  closeAllMenus();
+  openOverlay('overlayHistory');
+});
+
+$('#favBtn').addEventListener('click', () => {
+  closeAllMenus();
+  openOverlay('overlayFav');
+});
+
+$('#planBtnDock').addEventListener('click', () => {
+  closeAllMenus();
+  openOverlay('overlayPlan');
+});
+
+// 建議這行也一併收起選單
+$('#settingsBtn').addEventListener('click', () => {
+  closeAllMenus();
+  openSheet('sheetSearch');
+});
+
 
 /* ====== Quick Lock ====== */
 $('#quickBtn').addEventListener('click', ()=>{
