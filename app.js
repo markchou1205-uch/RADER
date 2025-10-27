@@ -112,20 +112,6 @@ $('#radarBtn').addEventListener('click', ()=>{
   alert('（Demo）直接啟動雷達掃描。建議使用下方「快速鎖定」獲得完整流程。');
 });
 
-sheetBackdrop?.addEventListener('click', () => {
-  const opened = [...document.querySelectorAll('.sheet.open')];
-  if (opened.length) opened.at(-1).classList.remove('open');
-  if (!anySheetOpen()) hideBackdrop();
-});
-// Esc 也能關
-document.addEventListener('keydown', (e) => {
-  if (e.key !== 'Escape') return;
-  const opened = [...document.querySelectorAll('.sheet.open')];
-  if (opened.length) { opened.at(-1).classList.remove('open'); hideBackdrop(); return; }
-  const ovs = [...document.querySelectorAll('.overlay.show')];
-  if (ovs.length) { ovs.at(-1).classList.remove('show'); return; }
-  closeAllMenus();
-});
 /* ====== Dock ====== */
 $('#historyBtn').addEventListener('click', () => { closeAllMenus(); openOverlay('overlayHistory'); });
 $('#favBtn').addEventListener('click', () => { closeAllMenus(); openOverlay('overlayFav'); });
@@ -237,7 +223,6 @@ function renderModePref(mode){
   $('#modePrefBox').innerHTML = `
     <div class="ctrl"><label>餐廳類別</label><div class="row" id="catRow">${catsHTML}</div></div>
 
-// 價位上限（下拉）
 <div class="ctrl">
   <label>價位上限（每人，元）</label>
   <select id="priceCap" class="select">
@@ -351,12 +336,10 @@ document.getElementById('saveSearch').addEventListener('click', (evt)=>{
   evt.stopPropagation();
   const mode = currentModeFromTabs();
   const cats  = Array.from(document.querySelectorAll('#catRow .pill2.active')).map(x=>x.dataset.cat);
-  const price = Array.from(document.querySelectorAll('#priceRow .pill2.active')).map(x=>x.dataset.price);
   const priceCap = parseInt(document.getElementById('priceCap').value,10);
   const priceAmt = parseInt(document.getElementById('priceRange').value,10);
   const distHM  = parseInt(document.getElementById('distRangeHM').value,10);
   const rating= document.getElementById('ratingRange').value;
-  const dist  = parseFloat(document.getElementById('distRange2').value);
   const ac    = document.getElementById('acSwitch').classList.contains('on');
   const seat  = document.getElementById('seatSwitch').classList.contains('on');
   const wait  = document.getElementById('waitRange').value;
