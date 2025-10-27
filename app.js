@@ -97,28 +97,27 @@ $('#radarBtn').addEventListener('click', ()=>{
   alert('（Demo）直接啟動雷達掃描。建議使用下方「快速鎖定」獲得完整流程。');
 });
 
+sheetBackdrop?.addEventListener('click', () => {
+  const opened = [...document.querySelectorAll('.sheet.open')];
+  if (opened.length) opened.at(-1).classList.remove('open');
+  if (!anySheetOpen()) hideBackdrop();
+});
+// Esc 也能關
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  const opened = [...document.querySelectorAll('.sheet.open')];
+  if (opened.length) { opened.at(-1).classList.remove('open'); hideBackdrop(); return; }
+  const ovs = [...document.querySelectorAll('.overlay.show')];
+  if (ovs.length) { ovs.at(-1).classList.remove('show'); return; }
+  closeAllMenus();
+});
 /* ====== Dock ====== */
-$('#historyBtn').addEventListener('click', () => {
-  closeAllMenus();
-  openOverlay('overlayHistory');
-});
-
-$('#favBtn').addEventListener('click', () => {
-  closeAllMenus();
-  openOverlay('overlayFav');
-});
-
-$('#planBtnDock').addEventListener('click', () => {
-  closeAllMenus();
-  openOverlay('overlayPlan');
-});
-
-// 建議這行也一併收起選單
-$('#settingsBtn').addEventListener('click', () => {
-  closeAllMenus();
-  openSheet('sheetSearch');
-});
-
+$('#historyBtn').addEventListener('click', () => { closeAllMenus(); openOverlay('overlayHistory'); });
+$('#favBtn').addEventListener('click', () => { closeAllMenus(); openOverlay('overlayFav'); });
+$('#planBtnDock').addEventListener('click', () => { closeAllMenus(); openOverlay('overlayPlan'); });
+$('#settingsBtn').addEventListener('click', () => { closeAllMenus(); openSheet('sheetSearch'); });
+$('#closeSearch').addEventListener('click', () => closeSheet('sheetSearch'));
+$('#saveSearch').addEventListener('click', () => { /* 儲存流程 */ closeSheet('sheetSearch'); });
 
 /* ====== Quick Lock ====== */
 $('#quickBtn').addEventListener('click', ()=>{
