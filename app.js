@@ -310,24 +310,28 @@ function renderModePref(mode){
   toggleSwitch('acSwitch'); toggleSwitch('seatSwitch');
 
   // 評價/等待時間
-  $('#ratingRange').addEventListener('input', e=>$('#ratingBadge').textContent = e.target.value + '★');
+const ratingR = $('#ratingRange');
+const ratingP = $('#ratingPreview');
+ratingR.addEventListener('input', e=> ratingP.textContent = e.target.value + '★');
   $('#waitRange').addEventListener('input',  e=>$('#waitBadge').textContent  = e.target.value);
 
-  // 價位：上限 → 變更拉桿 max
-  const capSel = $('#priceCap');
-  capSel.value = String(pf.priceCap);
-  const priceR = $('#priceRange'); const priceB = $('#priceBadge');
-  capSel.addEventListener('change', ()=>{
-    const cap = parseInt(capSel.value,10);
-    priceR.max = cap;
-    if (+priceR.value > cap) priceR.value = cap;
-    priceB.textContent = priceR.value;
-  });
-  priceR.addEventListener('input',  e=> priceB.textContent = e.target.value);
+// 價位上限 → 調整拉桿最大值與預覽
+const capSel = $('#priceCap');
+capSel.value = String(pf.priceCap);
+const priceR = $('#priceRange');
+const priceP = $('#pricePreview');
+capSel.addEventListener('change', ()=>{
+  const cap = parseInt(capSel.value,10);
+  priceR.max = cap;
+  if (+priceR.value > cap) priceR.value = cap;
+  priceP.textContent = priceR.value;
+});
+priceR.addEventListener('input', e=> priceP.textContent = e.target.value);
 
   // 距離（百公尺）
-  const distR = $('#distRangeHM'); const distB = $('#distBadgeHM');
-  distR.addEventListener('input', e=> distB.textContent = e.target.value);
+const distR = $('#distRangeHM');
+const distP = $('#distPreview');
+distR.addEventListener('input', e=> distP.textContent = e.target.value);
 }
 
 function currentModeFromTabs(){ const el = document.querySelector('#modeTabs .tab.active'); return el ? el.dataset.mode : 'casual'; }
