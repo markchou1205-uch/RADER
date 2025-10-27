@@ -119,6 +119,18 @@ $('#planBtnDock').addEventListener('click', () => { closeAllMenus(); openOverlay
 $('#settingsBtn').addEventListener('click', () => { closeAllMenus(); openSheet('sheetSearch'); });
 $('#closeSearch').addEventListener('click', () => closeSheet('sheetSearch'));
 $('#saveSearch').addEventListener('click', () => { /* 儲存流程 */ closeSheet('sheetSearch'); });
+// 立即找餐廳：依選項觸發
+$('#quickSearchSelect')?.addEventListener('change', (e)=>{
+  const v = e.target.value;
+  if(v==='fast') { $('#quickBtn').click(); }                  // 快速鎖定流程
+  if(v==='near_hot') { TODAY.active=true; TODAY.rating='4.0'; $('#startScan').click(); }
+  if(v==='open_now') { localStorage.setItem('_once_open_now','1'); $('#startScan').click(); }
+  if(v==='takeout')  { localStorage.setItem('_once_takeout','1'); $('#startScan').click(); }
+  if(v==='random')   { alert('（Demo）隨機為你挑一間！'); $('#startScan').click(); }
+  setTimeout(()=> e.target.value='fast', 600);
+});
+// 漏斗按鈕：展開「今天想吃」的第一個（價格）小面板
+$('#quickFilterBtn')?.addEventListener('click', ()=>{ if(!DRIVE_MODE) openQPanel('price'); });
 
 /* ====== Quick Lock ====== */
 $('#quickBtn').addEventListener('click', ()=>{
@@ -208,6 +220,68 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if(!box) return;
   box.style.display = DRIVE_MODE ? 'none' : 'flex';
 });
+// ===== Splash & Onboarding & Subscription gate =====
+(function(){
+  const SPL = $('#overlaySplash');
+  const OB  = $('#overlayOnboard');
+  const SUB = $('#overlaySub');
+
+  const SEEN = localStorage.getItem('OB_SEEN') === '1';
+  const DONT = localStorage.getItem('OB_DONT') === '1';
+  const TRIAL = localStorage.getItem('TRIAL_START'); // ISO string
+  const NOW = Date.now();
+
+  // Splash 1.2s
+  setTimeout(()=>{ SPL?.classList.remove('show'); proceed(); }, 1200);
+
+  function proceed(){
+    // Onboarding：若勾了不要再顯示則跳過
+    if(!SEEN && !DONT){ OB?.classList.add('show'); initOnboard(); }
+    else { checkSub(); }
+  }
+  function initOnboard(){
+    let i=0; const N=3;
+    const show=(k)=>{ for(let j=0;j<N;j++){ $('.ob[data-i="'+j+'"]').style.display=(j===k)?'block':'none'; $('#dot'+j).style.opacity=(j===k)?'1':'.3'; } };
+    show(0);
+    $('#obNext').onclick=()=>{ i++; if(i>=N){ localStorage.setItem('OB_SEEN','1'); OB.classList.remove('show'); checkSub(); } else show(i); };
+    $('#obSkip').onclick=()=>{ localStorage.setItem('OB_SEEN','1'); OB.classList.remove('show'); checkSub(); };
+    $('#obDont').onchange=(e)=>{ localStorage.setItem('OB_DONT', e.target.checked ? '1':'0'); };
+    // 簡單左右滑
+    let sx=0; $('#obSlides').addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+    $('#obSlides').addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-sx; if(Math.abs(dx)>40){ i = Math.min(2, Math.max(0, i + (dx<0?1:-1))); show(i); } },{passive:true});
+  }
+  function checkSub(){
+    // 試用中？超過14小時？
+    if(TRIAL){
+      const elapsedH = (NOW - Date.parse(TRIAL))/36e5;
+      if(elapsedH > 14){ SUB.classList.add('show'); lockSub(); return; }
+      // 試用尚未超過14小時 → 直接進主畫面
+      return;
+    }
+    // 未開始試用 → 首次顯示訂閱頁
+    SUB.classList.add('show'); wireSub();
+  }
+  function lockSub(){
+    // 超過14小時 → 留在訂閱頁，只能訂閱
+    $('#subClose').onclick = ()=>alert('試用已超過 14 小時，請選擇訂閱方案繼續使用。');
+    wireSub(true);
+  }
+  function wireSub(locked=false){
+    $('#subTrial').onclick=()=>{
+      if(locked){ alert('試用已到期'); return; }
+      localStorage.setItem('TRIAL_START', new Date().toISOString());
+      $('#overlaySub').classList.remove('show');
+      // 初次可導到設定（可略過）
+      setTimeout(()=>{ openSheet('sheetSearch'); }, 200);
+    };
+    document.querySelectorAll('.subPay').forEach(b=>b.addEventListener('click', ()=>{
+      alert('（Demo）前往付款：' + b.dataset.plan);
+      localStorage.setItem('SUB_ACTIVE','1');
+      $('#overlaySub').classList.remove('show');
+    }));
+    if(!locked) $('#subClose').onclick = ()=>{ $('#overlaySub').classList.remove('show'); };
+  }
+})();
 
 // 種類 chips（與 CATEGORIES_POOL 共用）
 function renderQuickCats(){
