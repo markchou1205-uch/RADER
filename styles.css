@@ -124,3 +124,6 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#fff0
 .sheet{ z-index: 20; }
 .overlay{ z-index: 20; }
 .backdrop{ z-index: 10; } /* 點這裡可關抽屜 */
+/* 下拉外觀（可放在檔案最後） */
+.select{height:36px;border:1px solid var(--ring);border-radius:10px;padding:0 10px;background:var(--card);font-weight:700}
+.select:focus{outline:2px solid var(--primary);border-color:transparent}
