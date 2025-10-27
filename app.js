@@ -237,33 +237,47 @@ function renderModePref(mode){
   $('#modePrefBox').innerHTML = `
     <div class="ctrl"><label>餐廳類別</label><div class="row" id="catRow">${catsHTML}</div></div>
 
-    <!-- 價位：先選上限，再用拉桿微調 -->
-    <div class="ctrl">
-      <label>價位上限（每人，元）</label>
-      <select id="priceCap" class="select">
-        <option value="100">100</option>
-        <option value="300">300</option>
-        <option value="500">500</option>
-        <option value="1000">1000</option>
-        <option value="3000">3000</option>
-      </select>
-    </div>
-    <div class="ctrl">
-      <label>可接受每人金額 <span class="badge" id="priceBadge">${pf.priceAmt}</span></label>
-      <input type="range" min="0" max="${pf.priceCap}" step="10" value="${pf.priceAmt}" id="priceRange" class="range"/>
-      <div class="small">先選上限，然後用拉桿微調實際預算。</div>
-    </div>
+// 價位上限（下拉）
+<div class="ctrl">
+  <label>價位上限（每人，元）</label>
+  <select id="priceCap" class="select">
+    <option value="100">100</option>
+    <option value="300">300</option>
+    <option value="500">500</option>
+    <option value="1000">1000</option>
+    <option value="3000">3000</option>
+  </select>
+</div>
 
-    <!-- 評價 -->
-    <div class="ctrl"><label>評價門檻 <span class="badge" id="ratingBadge">${(pf.rating ?? '3.5')}★</span></label>
-      <input type="range" min="3.0" max="5.0" step="0.1" value="${pf.rating ?? '3.5'}" id="ratingRange" class="range"/>
-    </div>
+<!-- 可接受每人金額：拉桿 + 右側預覽 -->
+<div class="ctrl">
+  <label>可接受每人金額</label>
+  <div class="rangeRow">
+    <input type="range" min="0" max="${pf.priceCap}" step="10"
+           value="${pf.priceAmt}" id="priceRange" class="range"/>
+    <span class="preview" id="pricePreview">${pf.priceAmt}</span>
+  </div>
+</div>
 
-    <!-- 距離（百公尺） -->
-    <div class="ctrl"><label>距離（百公尺） <span class="badge" id="distBadgeHM">${pf.distHM}</span></label>
-      <input type="range" min="1" max="20" step="1" value="${pf.distHM}" id="distRangeHM" class="range"/>
-      <div class="small">1–20（= 100m–2000m）。</div>
-    </div>
+<!-- 評價門檻：0.5 級距 + 右側預覽 -->
+<div class="ctrl">
+  <label>評價門檻</label>
+  <div class="rangeRow">
+    <input type="range" min="3.0" max="5.0" step="0.5"
+           value="${pf.rating ?? '3.5'}" id="ratingRange" class="range"/>
+    <span class="preview" id="ratingPreview">${(pf.rating ?? '3.5')}★</span>
+  </div>
+</div>
+
+<!-- 距離（百公尺）：1–20 + 右側預覽 -->
+<div class="ctrl">
+  <label>距離（百公尺）</label>
+  <div class="rangeRow">
+    <input type="range" min="1" max="20" step="1"
+           value="${pf.distHM}" id="distRangeHM" class="range"/>
+    <span class="preview" id="distPreview">${pf.distHM}</span>
+  </div>
+</div>
 
     <div class="ctrl"><label>有無冷氣</label><div id="acSwitch" class="switch ${acOn}"></div></div>
     <div class="ctrl"><label>可內用座位</label><div id="seatSwitch" class="switch ${seatOn}"></div></div>
