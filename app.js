@@ -71,13 +71,23 @@ avatar.addEventListener('click', (e)=>{ e.stopPropagation(); menu.classList.togg
 document.addEventListener('click', ()=>menu.classList.remove('open'));
 menu.querySelectorAll('.item').forEach(it=>{
   it.addEventListener('click', (e)=>{
-    e.stopPropagation(); menu.classList.remove('open');
+    e.stopPropagation();
+    menu.classList.remove('open');
     const type = it.dataset.panel;
-    if(type==='plan') closeAllMenus(); openOverlay('overlayPlan');
-    if(type==='search') openSheet('sheetSearch');
-    if(type==='basic') openSheet('sheetBasic');
+
+    if (type === 'plan') {
+      closeAllMenus();
+      openOverlay('overlayPlan');
+    } else if (type === 'search') {
+      closeAllMenus();
+      openSheet('sheetSearch');
+    } else if (type === 'basic') {
+      closeAllMenus();
+      openSheet('sheetBasic');
+    }
   });
 });
+
 
 /* ====== Pills ====== */
 $$('.pill').forEach(p=>{
@@ -245,7 +255,13 @@ function renderModePref(mode){
   $$('#noiseRow .pill2').forEach(el=>el.addEventListener('click', ()=>{ $$('#noiseRow .pill2').forEach(x=>x.classList.remove('active')); el.classList.add('active'); }));
 }
 function currentModeFromTabs(){ const el = document.querySelector('#modeTabs .tab.active'); return el ? el.dataset.mode : 'casual'; }
-document.addEventListener('DOMContentLoaded', ()=>{ renderModePref('casual'); });
+document.addEventListener('DOMContentLoaded', ()=>{
+  renderModePref('casual');
+  document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('open'));
+  const bd = document.getElementById('sheetBackdrop');
+  bd && bd.classList.remove('show');
+});
+
 document.addEventListener('click', (e)=>{
   const tab = e.target.closest('#modeTabs .tab'); if(!tab) return;
   $$('#modeTabs .tab').forEach(x=>x.classList.remove('active')); tab.classList.add('active'); renderModePref(tab.dataset.mode);
