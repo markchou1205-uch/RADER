@@ -46,8 +46,24 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#fff0
 .it .txt{font-size:12px}
 .lock{width:68px;height:68px;border-radius:18px;background:linear-gradient(180deg,var(--primary),var(--primary-2));display:grid;place-items:center;box-shadow:0 12px 24px rgba(255,106,61,.35);border:2px solid #fff;cursor:pointer}
 .lock svg{width:30px;height:30px;stroke:#fff;fill:none;stroke-width:2.4}
-.sheet{position:absolute;left:0;right:0;bottom:-100%;background:var(--card);border-radius:22px 22px 0 0;border:1px solid var(--ring);box-shadow:0 -20px 40px rgba(0,0,0,.25);padding:14px 14px 18px;transition:transform .28s ease-out, bottom .28s ease-out}
-.sheet.open{bottom:0}
+/* 原本是 bottom:-100% / .open{bottom:0} —— 會在部分環境失效 */
+.sheet{
+  position:absolute; left:0; right:0; bottom:0;
+  background:var(--card);
+  border-radius:22px 22px 0 0;
+  border:1px solid var(--ring);
+  box-shadow:0 -20px 40px rgba(0,0,0,.25);
+  padding:14px 14px 18px;
+
+  /* 用 transform 隱藏，比 bottom:-100% 穩定 */
+  transform: translateY(100%);
+  transition: transform .28s ease-out;
+  z-index: 20; /* 你檔案裡已經有層級，保留 */
+}
+.sheet.open{
+  transform: translateY(0);
+}
+
 .sheet .handle{width:46px;height:5px;background:#e5e7eb;border-radius:999px;margin:0 auto 12px;opacity:.6}
 .sheet h3{margin:6px 2px 8px}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
