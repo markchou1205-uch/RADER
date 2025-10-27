@@ -59,6 +59,22 @@
         <div class="hint">提示：開始後可說「下一間」或點「餐廳列表」</div>
       </div>
 <!-- Quick one-time filters: 今天想吃（定點模式顯示） -->
+  <div class="it" title="立即找餐廳" style="grid-column: 1 / span 2;">
+    <div style="display:flex;gap:8px;align-items:center;width:100%">
+      <div class="ficon" id="quickFilterBtn">
+        <!-- 漏斗 icon -->
+        <svg viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8z"></path></svg>
+      </div>
+      <select id="quickSearchSelect" class="select" style="flex:1">
+        <option value="fast">快速搜尋</option>
+        <option value="near_hot">附近熱門</option>
+        <option value="open_now">只看營業中</option>
+        <option value="takeout">外帶優先</option>
+        <option value="random">隨機帶我去</option>
+      </select>
+    </div>
+    <div class="txt">立即找餐廳</div>
+  </div>
 <div class="card" id="qbarBox" style="display:none; flex-direction:column; align-items:stretch;">
   <div class="status" style="font-weight:700;margin-bottom:6px">立即找餐廳</div>
 
@@ -126,24 +142,6 @@
 </div>
 
       <div class="dock" role="navigation" aria-label="工具列">
-          <!-- 立即找餐廳：下拉 + 漏斗 -->
-  <div class="it" title="立即找餐廳" style="grid-column: 1 / span 2;">
-    <div style="display:flex;gap:8px;align-items:center;width:100%">
-      <div class="ficon" id="quickFilterBtn">
-        <!-- 漏斗 icon -->
-        <svg viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8z"></path></svg>
-      </div>
-      <select id="quickSearchSelect" class="select" style="flex:1">
-        <option value="fast">快速搜尋</option>
-        <option value="near_hot">附近熱門</option>
-        <option value="open_now">只看營業中</option>
-        <option value="takeout">外帶優先</option>
-        <option value="random">隨機帶我去</option>
-      </select>
-    </div>
-    <div class="txt">立即找餐廳</div>
-  </div>
-
         <div class="it" id="historyBtn" title="記錄"><svg viewBox="0 0 24 24"><path d="M7 3h10a2 2 0 0 1 2 2v14l-7-3-7 3V5a2 2 0 0 1 2-2z"></path></svg><div class="txt">記錄</div></div>
         <div class="it" id="favBtn" title="最愛"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-.96-.96a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.74-8.74a5.5 5.5 0 0 0 0-7.88z"></path></svg><div class="txt">最愛</div></div>
         <div class="lock" id="quickBtn" title="快速鎖定"><svg viewBox="0 0 24 24"><path d="M12 3v6M12 15v6M21 12h-6M9 12H3"></path></svg></div>
